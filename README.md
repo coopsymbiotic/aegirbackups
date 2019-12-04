@@ -1,44 +1,54 @@
-# aegirbackups
+# Aegir Backups
 
-![Screenshot](/images/screenshot.png)
+Allows CiviCRM administrators to create and download backups from Aegir.
 
-(*FIXME: In one or two paragraphs, describe what the extension does and why one would download it. *)
+This assumes that the site is managed by [Aegir](http://www.aegirproject.org/)
+and that the site was created using [hosting_restapi](https://github.com/coopsymbiotic/hosting_restapi).
 
 The extension is licensed under [AGPL-3.0](LICENSE.txt).
 
 ## Requirements
 
-* PHP v7.0+
-* CiviCRM (*FIXME: Version number*)
+* PHP v7.2+
+* CiviCRM 5.10+
 
-## Installation (Web UI)
+## Installation
 
-This extension has not yet been published for installation via the web UI.
+Enable as a regular CiviCRM extension.
 
-## Installation (CLI, Zip)
+On the Aegir server, we need to provide limited access so that the webserver can access
+downloads:
 
-Sysadmins and developers may download the `.zip` file for this extension and
-install it with the command-line tool [cv](https://github.com/civicrm/cv).
-
-```bash
-cd <extension-dir>
-cv dl aegirbackups@https://github.com/FIXME/aegirbackups/archive/master.zip
+```
+chgrp www-data /var/aegir/backups
+chmod g+r /var/aegir/backups
 ```
 
-## Installation (CLI, Git)
+This makes it possible to access files if the filename is known (filenames are somewhat
+difficult to guess, although not random).
 
-Sysadmins and developers may clone the [Git](https://en.wikipedia.org/wiki/Git) repo for this extension and
-install it with the command-line tool [cv](https://github.com/civicrm/cv).
+It might be best not to do this on servers where users can run arbitrary PHP code.
 
-```bash
-git clone https://github.com/FIXME/aegirbackups.git
-cv en aegirbackups
-```
+# Support
 
-## Usage
+Please post bug reports in the issue tracker of this project:  
+https://github.com/coopsymbiotic/aegirbackups/issues
 
-(* FIXME: Where would a new user navigate to get started? What changes would they see? *)
+This is a community contributed extension written thanks to the financial
+support of organisations using it, as well as the very helpful and collaborative
+CiviCRM community.
 
-## Known Issues
+While we do our best to provide volunteer support for this extension, please
+consider financially contributing to support or development of this extension
+if you can.
 
-(* FIXME *)
+Commercial support via Coop SymbioTIC:  
+https://www.symbiotic.coop/en
+
+# License
+
+(C) 2019-2020 Mathieu Lutfy <mathieu@symbiotic.coop>  
+(C) 2019-2020 Coop SymbioTIC <info@symbiotic.coop>
+
+Distributed under the terms of the GNU Affero General public license (AGPL).
+See LICENSE.txt for details.
