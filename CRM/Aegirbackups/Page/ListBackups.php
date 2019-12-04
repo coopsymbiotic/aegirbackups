@@ -7,22 +7,19 @@ class CRM_Aegirbackups_Page_ListBackups extends CRM_Core_Page {
   public function run() {
     CRM_Utils_System::setTitle(E::ts('Backups'));
 
-    $action = CRM_Utils_Request::retrieveValue('action', 'String');
-    $new = ($action == 'new' ? true : false);
+    // Weird: if we use 'action', the page behaves very oddly.
+    $op = CRM_Utils_Request::retrieveValue('op', 'String');
 
-    if ($action == 'download') {
+    if ($op === 'download') {
       $id = CRM_Utils_Request::retrieveValue('id', 'Positive');
       $backups = CRM_Aegirbackups_BAO_Aegirbackups::download($id);
-
-      # $redirectUrl = CRM_Utils_System::url('civicrm/admin/backups', 'reset=1');
-      # CRM_Utils_System::redirect($redirectUrl);
     }
 
+    $new = ($op === 'new' ? true : false);
     $backups = CRM_Aegirbackups_BAO_Aegirbackups::getBackupList($new);
     $this->assign('backups', $backups);
 
     if ($new) {
-      // FIXME: E::ts not working?
       CRM_Core_Session::setStatus(E::ts('A new backup has been scheduled. Please wait a few minutes and refresh this page.'), '', 'info');
       $redirectUrl = CRM_Utils_System::url('civicrm/admin/backups', 'reset=1');
       CRM_Utils_System::redirect($redirectUrl);
