@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/admin/backups</path>
+    <page_callback>CRM_Aegirbackups_Page_ListBackups</page_callback>
+    <title>Backups</title>
+    <access_arguments>administer CiviCRM</access_arguments>
+  </item>
+</menu>
