@@ -2,6 +2,8 @@
 
 Allows CiviCRM administrators to create and download backups from Aegir.
 
+![Screenshot](/images/screenshot.png)
+
 This assumes that the site is managed by [Aegir](http://www.aegirproject.org/)
 and that the site was created using [hosting_restapi](https://github.com/coopsymbiotic/hosting_restapi).
 
