@@ -8,8 +8,8 @@ class CRM_Aegirbackups_BAO_Aegirbackups {
    *
    */
   public static function getBackupList($new = false) {
-    $aegir_server = CRM_Aegirbackups_Settings::get('hosting_restapi_hostmaster');
-    $token = CRM_Aegirbackups_Settings::get('hosting_restapi_token');
+    $aegir_server = Civi::settings()->get('hosting_restapi_hostmaster');
+    $token = Civi::settings()->get('hosting_restapi_token');
 
     $client = new GuzzleHttp\Client();
 
