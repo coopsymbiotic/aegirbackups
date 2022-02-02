@@ -51,11 +51,11 @@ Now fetch the token
 > SELECT token FROM hosting_restapi_order WHERE site = 'www.example.org';
 ```
 
-Now set the required variables on the CiviCRM site:
+Now set the required settings on the CiviCRM site:
 
 ```
-drush @www.example.org vset hosting_restapi_hostmaster https://aegir.example.org
-drush @www.example.org vset hosting_restapi_token 'the-token'
+drush @www.example.org cvapi setting.create hosting_restapi_hostmaster='https://aegir.example.org'
+drush @www.example.org cvapi setting.create hosting_restapi_token='the-token'
 ```
 
 Then from CiviCRM, go to Administer > Aegir Backups and schedule a new backup.
