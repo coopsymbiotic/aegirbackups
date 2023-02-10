@@ -2,7 +2,7 @@
 <extension key="aegirbackups" type="module">
   <file>aegirbackups</file>
   <name>Aegir Backups</name>
-  <description>Allows administrators to backup their entire CiviCRM database</description>
+  <description>Allows CiviCRM administrators to generate and download backups of their CiviCRM instance (requires Aegir, see README.md)</description>
   <license>AGPL-3.0</license>
   <maintainer>
     <author>Mathieu Lutfy</author>
