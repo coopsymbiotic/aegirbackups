@@ -91,8 +91,9 @@ class CRM_Aegirbackups_BAO_Aegirbackups {
    * This will most likely fail for large databases.
    */
   public static function downloadSQLdump() {
-    $credentials = DB::parseDSN(CRM_Core_Config::singleton()->dsn);
-    $cmd = sprintf("mysqldump --defaults-file=/dev/fd/3 %s --no-tablespaces --no-autocommit --skip-add-locks --single-transaction --quick --hex-blob %s", $gtid_option, escapeshellcmd($credentials['database']));
+    $config = CRM_Core_Config::singleton();
+    $credentials = DB::parseDSN($config->dsn);
+    $cmd = sprintf("mysqldump --defaults-file=/dev/fd/3 --no-tablespaces --no-autocommit --skip-add-locks --single-transaction --quick --hex-blob %s", escapeshellcmd($credentials['database']));
     $dump_filename = $config->uploadDir . '/database-' . date('YmdHis') . '-' . md5(uniqid(rand(), TRUE)) . '.sql';
     $dump_fd = fopen($dump_filename, 'x');
 
@@ -102,17 +103,17 @@ class CRM_Aegirbackups_BAO_Aegirbackups {
     }
 
     $pipes = [];
-    $descriptorspec = $this->generate_descriptorspec();
+    $descriptorspec = self::generate_descriptorspec();
     $process = proc_open($cmd, $descriptorspec, $pipes);
 
     if (is_resource($process)) {
-      fwrite($pipes[3], $this->generate_mycnf($credentials));
+      fwrite($pipes[3], self::generate_mycnf($credentials));
       fclose($pipes[3]);
   
       // At this point we have opened a pipe to that mysqldump command. Now
       // we want to read it one line at a time and do our replacements.
       while (($buffer = fgets($pipes[1], 4096)) !== FALSE) {
-        $this->filter_line($buffer);
+        self::filter_line($buffer);
         // Write the resulting line in the backup file.
         if ($buffer && fwrite($dump_fd, $buffer) === FALSE) {
           throw new Exception(E::ts('Could not write database backup file mysqldump: %1 (write failed)', [1 => $dump_filename]));
@@ -166,7 +167,7 @@ class CRM_Aegirbackups_BAO_Aegirbackups {
    * Generate the descriptors necessary to open a process with readable and
    * writeable pipes. 
    */
-  function generate_descriptorspec($stdin_file = NULL) {
+  public static function generate_descriptorspec($stdin_file = NULL) {
     $stdin_spec = is_null($stdin_file) ? ["pipe", "r"] : ["file", $stdin_file, "r"];
     $descriptorspec = [
       0 => $stdin_spec,         // stdin is a pipe that the child will read from
@@ -181,7 +182,7 @@ class CRM_Aegirbackups_BAO_Aegirbackups {
    * Generate the contents of a mysql config file containing database
    * credentials.
    */ 
-  function generate_mycnf(Array $credentials) : string {
+  public static function generate_mycnf(Array $credentials) : string {
     $hostparts = explode(':', $credentials['hostspec']);
     $port = $hostparts[1] ?? 3306;
 
@@ -200,7 +201,7 @@ port=%s
   /**
    * Return an array of regexes to filter lines of mysqldumps.
    */
-  function get_regexes() {
+  public static function get_regexes() {
     static $regexes = NULL;
     if (is_null($regexes)) {
       $regexes = [
@@ -215,8 +216,8 @@ port=%s
     return $regexes;
   }     
         
-  function filter_line(&$line) {
-    $regexes = $this->get_regexes();
+  public static function filter_line(&$line) {
+    $regexes = self::get_regexes();
     foreach ($regexes as $find => $replace) {
       if ($replace === FALSE) {
         if (preg_match($find, $line)) {
