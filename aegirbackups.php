@@ -31,17 +31,6 @@ function aegirbackups_civicrm_enable() {
 }
 
 /**
- * Implements hook_civicrm_entityTypes().
- *
- * Declare entity types provided by this module.
- *
- * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_entityTypes
- */
-function aegirbackups_civicrm_entityTypes(&$entityTypes) {
-  _aegirbackups_civix_civicrm_entityTypes($entityTypes);
-}
-
-/**
  * Implements hook_civicrm_navigationMenu().
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_navigationMenu
