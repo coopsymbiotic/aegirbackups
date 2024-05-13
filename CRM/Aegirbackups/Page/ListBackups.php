@@ -12,7 +12,12 @@ class CRM_Aegirbackups_Page_ListBackups extends CRM_Core_Page {
 
     if ($op === 'download') {
       $id = CRM_Utils_Request::retrieveValue('id', 'Positive');
-      $backups = CRM_Aegirbackups_BAO_Aegirbackups::download($id);
+      // exits or throws an exception
+      CRM_Aegirbackups_BAO_Aegirbackups::download($id);
+    }
+    elseif ($op === 'sql') {
+      // exits or throws an exception
+      CRM_Aegirbackups_BAO_Aegirbackups::downloadSQLdump();
     }
 
     $new = ($op === 'new' ? true : false);
