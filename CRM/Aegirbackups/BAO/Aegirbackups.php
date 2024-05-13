@@ -133,7 +133,7 @@ class CRM_Aegirbackups_BAO_Aegirbackups {
       throw new Exception(E::ts('Could not run mysqldump for backups'));
     }
 
-    $filesize = filesize($dump_filename) < 1024;
+    $filesize = filesize($dump_filename);
     if ($filesize < 1024) {
       throw new Exception(E::ts('Could not generate database backup from mysqldump. (filesize: %1, error: %2)', [1 => $filesize, 2 => $err]));
     }
