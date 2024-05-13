@@ -115,7 +115,7 @@ class CRM_Aegirbackups_BAO_Aegirbackups {
         $this->filter_line($buffer);
         // Write the resulting line in the backup file.
         if ($buffer && fwrite($dump_fd, $buffer) === FALSE) {
-          throw new Exception(E::ts('Could not write database backup file mysqldump: %1 (write failed)', [1 => $dump_filename]'));
+          throw new Exception(E::ts('Could not write database backup file mysqldump: %1 (write failed)', [1 => $dump_filename]));
         }
       }
       // Close stdout.
