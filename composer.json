@@ -1,0 +1,5 @@
+{
+    "name": "civicrm/aegirbackups",
+    "type": "civicrm-ext",
+    "description": "Allows CiviCRM administrators to generate and download backups of their CiviCRM instance"
+}
