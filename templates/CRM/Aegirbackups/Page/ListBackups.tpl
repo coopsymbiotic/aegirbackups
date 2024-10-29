@@ -10,7 +10,7 @@
       {foreach from=$backups item=row}
         <tr>
           <td>{$row.date|crmDate:"%Y-%m-%d %H:%m"}</td>
-          <td>{$row.size|format_size}</td>
+          <td>{$row.size|crmNumberFormat}</td>
           <td><a href="{crmURL p="civicrm/admin/backups" q="op=download&id=`$row.id`"}">{ts}Download{/ts}</a></td>
         </tr>
       {/foreach}

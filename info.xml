@@ -18,7 +18,7 @@
   <version>1.2</version>
   <develStage>stable</develStage>
   <compatibility>
-    <ver>5.65</ver>
+    <ver>5.78</ver>
   </compatibility>
   <comments/>
   <classloader>
@@ -27,10 +27,10 @@
   </classloader>
   <civix>
     <namespace>CRM/Aegirbackups</namespace>
-    <format>23.02.1</format>
+    <format>24.09.1</format>
   </civix>
   <mixins>
     <mixin>menu-xml@1.0.0</mixin>
-    <mixin>smarty-v2@1.0.1</mixin>
+    <mixin>smarty@1.0.3</mixin>
   </mixins>
 </extension>
