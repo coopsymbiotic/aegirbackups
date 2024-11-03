@@ -261,9 +261,6 @@ port=%s
       $command .= ' .';
       $result = exec(sprintf($command, $backup_file));
 
-      // Get the size of the backup
-      $filesize = filesize($backup_file);
-
       // Delete our exclude.tag
       unlink(CRM_Core_Config::singleton()->templateCompileDir . '/exclude.tag');
 
@@ -277,7 +274,7 @@ port=%s
     header('Expires: 0');
     header('Cache-Control: must-revalidate');
     header('Pragma: public');
-    header('Content-Length: ' . $filesize);
+    header('Content-Length: ' . filesize($backup_file));
     readfile($backup_file);
     unlink($backup_file);
     exit;
