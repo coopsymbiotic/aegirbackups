@@ -244,30 +244,32 @@ port=%s
   public static function downloadTar() {
     $olddir = getcwd();
     $site_root = self::getSiteRootDirectory();
+    $backup_file = Civi::paths()->getPath("[civicrm.private]/backup.tar.gz");
 
     if (!chdir($site_root)) {
       throw new Exception(E::ts('Failed to change directory to %1', [1 => $site_root]));
     }
 
-    // Exclude templates_c (smarty and php cache)
-    $exclude_tag = "touch " . CRM_Core_Config::singleton()->templateCompileDir . '/exclude.tag';
-    exec($exclude_tag);
+    if (!file_exists($backup_file)) {
+      // Exclude templates_c (smarty and php cache)
+      $exclude_tag = "touch " . CRM_Core_Config::singleton()->templateCompileDir . '/exclude.tag';
+      exec($exclude_tag);
 
-    $backup_file = Civi::paths()->getPath("[civicrm.private]/backup.tar.gz");
-    $command_base = "tar cpfz";
-    $command_arguments = " %s --exclude-tag=exclude.tag";
-    $command = $command_base . $command_arguments;
-    $command .= ' .';
-    $result = exec(sprintf($command, $backup_file));
+      $command_base = "tar cpfz";
+      $command_arguments = " %s --exclude-tag=exclude.tag";
+      $command = $command_base . $command_arguments;
+      $command .= ' .';
+      $result = exec(sprintf($command, $backup_file));
 
-    // Get the size of the backup
-    $filesize = filesize($backup_file);
+      // Get the size of the backup
+      $filesize = filesize($backup_file);
 
-    // Delete our exclude.tag
-    unlink(CRM_Core_Config::singleton()->templateCompileDir . '/exclude.tag');
+      // Delete our exclude.tag
+      unlink(CRM_Core_Config::singleton()->templateCompileDir . '/exclude.tag');
 
-    // Set the cwd back to the default
-    chdir($olddir);
+      // Set the cwd back to the default
+      chdir($olddir);
+    }
 
     header('Content-Description: CiviCRM Files backup');
     header('Content-Type: application/octet-stream');
