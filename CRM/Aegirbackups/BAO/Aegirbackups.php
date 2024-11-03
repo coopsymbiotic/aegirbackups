@@ -12,6 +12,9 @@ class CRM_Aegirbackups_BAO_Aegirbackups {
     $token = Civi::settings()->get('hosting_restapi_token');
 
     if (!$aegir_server || !$token) {
+      if ($new) {
+        self::downloadTar();
+      }
       return [];
     }
 
@@ -155,7 +158,7 @@ class CRM_Aegirbackups_BAO_Aegirbackups {
       $test--;
     }
 
-    header('Content-Description: CiviCRM backup');
+    header('Content-Description: CiviCRM SQL backup');
     header('Content-Type: application/octet-stream');
     header('Content-Disposition: attachment; filename="' . basename($dump_filename) . '"');
     header('Expires: 0');
@@ -236,6 +239,46 @@ port=%s
         }
       }
     }
+  }
+
+  public static function downloadTar() {
+    $olddir = getcwd();
+    $site_root = self::getSiteRootDirectory();
+
+    if (!chdir($site_root)) {
+      throw new Exception(E::ts('Failed to change directory to %1', [1 => $site_root]));
+    }
+
+    // Exclude templates_c (smarty and php cache)
+    $exclude_tag = "touch " . CRM_Core_Config::singleton()->templateCompileDir . '/exclude.tag';
+    exec($exclude_tag);
+
+    $backup_file = Civi::paths()->getPath("[civicrm.private]/backup.tar.gz");
+    $command_base = "tar cpfz";
+    $command_arguments = " %s --exclude-tag=exclude.tag";
+    $command = $command_base . $command_arguments;
+    $command .= ' .';
+    $result = exec(sprintf($command, $backup_file));
+
+    // Get the size of the backup
+    $filesize = filesize($backup_file);
+
+    // Delete our exclude.tag
+    unlink(CRM_Core_Config::singleton()->templateCompileDir . '/exclude.tag');
+
+    // Set the cwd back to the default
+    chdir($olddir);
+
+    header('Content-Description: CiviCRM Files backup');
+    header('Content-Type: application/octet-stream');
+    header('Content-Disposition: attachment; filename="' . basename($backup_file) . '"');
+    header('Expires: 0');
+    header('Cache-Control: must-revalidate');
+    header('Pragma: public');
+    header('Content-Length: ' . $filesize);
+    readfile($backup_file);
+    unlink($backup_file);
+    exit;
   }
 
   public static function getSiteRootDirectory() {
