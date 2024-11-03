@@ -11,6 +11,10 @@ class CRM_Aegirbackups_BAO_Aegirbackups {
     $aegir_server = Civi::settings()->get('hosting_restapi_hostmaster');
     $token = Civi::settings()->get('hosting_restapi_token');
 
+    if (!$aegir_server || !$token) {
+      return [];
+    }
+
     $client = new GuzzleHttp\Client();
 
     $response = $client->request('GET', $aegir_server . '/hosting/api/site/backup', [
@@ -232,6 +236,26 @@ port=%s
         }
       }
     }
-  }     
+  }
+
+  public static function getSiteRootDirectory() {
+    // Check if it is an Aegir Drupal site (avoid access to other sites)
+    if (preg_match('/platforms/', getcwd())) {
+      return Civi::paths()->getPath("[civicrm.files]/../");
+    }
+    // Usually the working directory is the root of the CMS
+    return getcwd();
+  }
+
+  public static function getTotalDiskSpaceUsage() {
+    return exec('du -s ' . escapeshellcmd(self::getSiteRootDirectory()) . " | awk '{print \$1}'");
+  }
+
+  public static function getDatabaseSize() {
+    return CRM_Core_DAO::singleValueQuery('
+      SELECT (DATA_LENGTH+INDEX_LENGTH) tablesize
+      FROM information_schema.tables
+      WHERE TABLE_SCHEMA = DATABASE()');
+  }
 
 }

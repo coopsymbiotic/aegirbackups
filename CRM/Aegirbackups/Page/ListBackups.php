@@ -23,6 +23,10 @@ class CRM_Aegirbackups_Page_ListBackups extends CRM_Core_Page {
     $new = ($op === 'new' ? true : false);
     $backups = CRM_Aegirbackups_BAO_Aegirbackups::getBackupList($new);
     $this->assign('backups', $backups);
+    $this->assign('free_disk_space', disk_free_space(getcwd()));
+    $this->assign('files_size', CRM_Aegirbackups_BAO_Aegirbackups::getTotalDiskSpaceUsage());
+    $this->assign('db_size', CRM_Aegirbackups_BAO_Aegirbackups::getDatabaseSize());
+    $this->assign('pwd', getcwd());
 
     if ($new) {
       CRM_Core_Session::setStatus(E::ts('A new backup has been scheduled. Please wait a few minutes and refresh this page.'), '', 'info');
