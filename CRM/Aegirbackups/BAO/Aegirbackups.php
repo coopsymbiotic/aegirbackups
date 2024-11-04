@@ -156,6 +156,9 @@ class CRM_Aegirbackups_BAO_Aegirbackups {
       $test--;
     }
 
+    $dump_filename = self::gzip($dump_filename);
+    $filesize = filesize($dump_filename);
+
     header('Content-Description: CiviCRM SQL backup');
     header('Content-Type: application/octet-stream');
     header('Content-Disposition: attachment; filename="' . basename($dump_filename) . '"');
@@ -221,6 +224,38 @@ port=%s
     $mycnf .= "default-character-set=utf8mb4" . PHP_EOL;
 
     return $mycnf;
+  }
+
+  protected static function gzip(string $source): string {
+    $destination = $source . '.gz';
+
+    // Open the source file for reading
+    $sourceFile = fopen($source, 'rb');
+    if (!$sourceFile) {
+      throw new Exception("Could not open source file: $source");
+    }
+
+    // Open the destination file for writing (gzipped, max compression)
+    $gzFile = gzopen($destination, 'wb9');
+    if (!$gzFile) {
+      fclose($sourceFile);
+      throw new Exception("Could not open destination file: $destination");
+    }
+
+    // Read the source file and write it to the gz file
+    while (!feof($sourceFile)) {
+      $buffer = fread($sourceFile, 4096);
+      gzwrite($gzFile, $buffer);
+    }
+
+    fclose($sourceFile);
+    gzclose($gzFile);
+
+    // Delete the original file
+    unlink($source);
+
+    // Return the new filename
+    return $destination;
   }
 
   /**
