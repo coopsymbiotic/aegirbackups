@@ -105,7 +105,7 @@ class CRM_Aegirbackups_BAO_Aegirbackups {
 
     // Check for Drupal7
     global $conf;
-    if (!empty($conf['databases']['default']['default']['database'])) {
+    if (!empty($conf['databases']['default']['default']['database']) && $conf['databases']['default']['default']['database'] != $credentials['database']) {
       $databases .= ' ' . escapeshellcmd($conf['databases']['default']['default']['database']);
     }
 
