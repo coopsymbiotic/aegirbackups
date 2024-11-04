@@ -100,8 +100,9 @@ class CRM_Aegirbackups_BAO_Aegirbackups {
   public static function downloadSQLdump() {
     $config = CRM_Core_Config::singleton();
     $credentials = DB::parseDSN($config->dsn);
-    $cmd = sprintf("mysqldump --defaults-file=/dev/fd/3 --no-tablespaces --no-autocommit --skip-add-locks --single-transaction --quick --hex-blob %s", escapeshellcmd($credentials['database']));
-    $dump_filename = $config->uploadDir . '/database-' . date('YmdHis') . '-' . md5(uniqid(rand(), TRUE)) . '.sql';
+    $mycnf = self::generate_mycnf_file($credentials);
+    $cmd = sprintf("mysqldump --defaults-file=%s --no-tablespaces --no-autocommit --skip-add-locks --single-transaction --quick --hex-blob %s", escapeshellcmd($mycnf), escapeshellcmd($credentials['database']));
+    $dump_filename = Civi::paths()->getPath('[civicrm.private]/database-' . date('YmdHis') . '-' . md5(uniqid(rand(), TRUE)) . '.sql');
     $dump_fd = fopen($dump_filename, 'x');
 
     // Fail if db file already exists.
@@ -114,9 +115,6 @@ class CRM_Aegirbackups_BAO_Aegirbackups {
     $process = proc_open($cmd, $descriptorspec, $pipes);
 
     if (is_resource($process)) {
-      fwrite($pipes[3], self::generate_mycnf($credentials));
-      fclose($pipes[3]);
-  
       // At this point we have opened a pipe to that mysqldump command. Now
       // we want to read it one line at a time and do our replacements.
       while (($buffer = fgets($pipes[1], 4096)) !== FALSE) {
@@ -168,6 +166,26 @@ class CRM_Aegirbackups_BAO_Aegirbackups {
     readfile($dump_filename);
     unlink($dump_filename);
     exit;
+  }
+
+  protected static function createMysqlTmpDir(): string {
+    $path = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'aegirbackups-' . posix_getuid();
+    if (!is_dir($path)) {
+      mkdir($path, 0700);
+    }
+    return $path;
+  }
+
+  protected static function generate_mycnf_file(Array $credentials): string {
+    $tmpDir = self::createMysqlTmpDir();
+    $data = self::generate_mycnf($credentials);
+    $file = $tmpDir . '/my.cnf-' . md5($data);
+    if (!file_exists($file)) {
+      if (!file_put_contents($file, $data)) {
+        throw new \RuntimeException("Failed to create temporary my.cnf connection file.");
+      }
+    }
+    return $file;
   }
 
   /**
