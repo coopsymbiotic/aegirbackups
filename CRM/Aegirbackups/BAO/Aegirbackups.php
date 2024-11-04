@@ -101,7 +101,15 @@ class CRM_Aegirbackups_BAO_Aegirbackups {
     $config = CRM_Core_Config::singleton();
     $credentials = DB::parseDSN($config->dsn);
     $mycnf = self::generate_mycnf_file($credentials);
-    $cmd = sprintf("mysqldump --defaults-file=%s --no-tablespaces --no-autocommit --skip-add-locks --single-transaction --quick --hex-blob %s", escapeshellcmd($mycnf), escapeshellcmd($credentials['database']));
+    $databases = escapeshellcmd($credentials['database']);
+
+    // Check for Drupal7
+    global $conf;
+    if (!empty($conf['databases']['default']['default']['database'])) {
+      $databases .= ' ' . escapeshellcmd($conf['databases']['default']['default']['database']);
+    }
+
+    $cmd = sprintf("mysqldump --defaults-file=%s --no-tablespaces --no-autocommit --skip-add-locks --single-transaction --quick --hex-blob --databases %s", escapeshellcmd($mycnf), $databases);
     $dump_filename = Civi::paths()->getPath('[civicrm.private]/database-' . date('YmdHis') . '-' . md5(uniqid(rand(), TRUE)) . '.sql');
     $dump_fd = fopen($dump_filename, 'x');
 
