@@ -103,7 +103,7 @@ class CRM_Aegirbackups_BAO_Aegirbackups {
     $mycnf = self::generate_mycnf_file($credentials);
     $databases = escapeshellcmd($credentials['database']);
 
-    // Check for Drupal7
+    // Check for Drupal7 (FIXME: not well tested)
     global $conf;
     if (!empty($conf['databases']['default']['default']['database']) && $conf['databases']['default']['default']['database'] != $credentials['database']) {
       $databases .= ' ' . escapeshellcmd($conf['databases']['default']['default']['database']);
